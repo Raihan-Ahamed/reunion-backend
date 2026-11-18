@@ -1,15 +1,7 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const QRCode = require('qrcode');
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: Number(process.env.SMTP_PORT) === 465,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // টিকিট ইমেইল পাঠানো — QR কোডসহ, ভেরিফিকেশন লিংক এমবেড করা থাকে
 async function sendTicketEmail(reg) {
@@ -39,7 +31,7 @@ async function sendTicketEmail(reg) {
     </div>
   </div>`;
 
-  await transporter.sendMail({
+  await resend.emails.send({
     from: process.env.SMTP_FROM,
     to: reg.email,
     subject: 'আপনার রেজিস্ট্রেশন কনফার্ম হয়েছে — Reunion 2026 টিকিট',
@@ -53,7 +45,7 @@ async function sendTicketEmail(reg) {
 }
 
 async function sendRejectionEmail(reg, reason) {
-  await transporter.sendMail({
+  await resend.emails.send({
     from: process.env.SMTP_FROM,
     to: reg.email,
     subject: 'আপনার রেজিস্ট্রেশন সম্পর্কে তথ্য — Reunion 2026',
