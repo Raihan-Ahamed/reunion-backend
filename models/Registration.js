@@ -11,6 +11,7 @@ const registrationSchema = new mongoose.Schema({
   phone:           { type: String, required: true },
   email:           { type: String, trim: true, lowercase: true },
   sscRegNumber:    { type: String, required: true },
+  tshirtSize:      { type: String, required: true },
 
   photoPath:       { type: String, required: true },   // ছবি
   sscDocPaths:     [{ type: String, required: true }],  // SSC registration card / certificate (multiple files allowed)

@@ -81,10 +81,10 @@ app.post('/api/register',
       }
 
       // ছবি ও ডকুমেন্ট Cloudinary-তে আপলোড — এগুলো সার্ভার রিস্টার্ট/স্লিপেও হারাবে না
-      const photoUrl = await uploadToCloudinary(req.files.photo[0].buffer, req.files.photo[0].originalname, 'image');
-      const sscDocUrls = await Promise.all(
-        req.files.sscDocs.map(f => uploadToCloudinary(f.buffer, f.originalname, 'auto'))
-      );
+      const [photoUrl, sscDocUrls] = await Promise.all([
+  uploadToCloudinary(req.files.photo[0].buffer, req.files.photo[0].originalname, 'image'),
+  Promise.all(req.files.sscDocs.map(f => uploadToCloudinary(f.buffer, f.originalname, 'auto')))
+]);
 
       const reg = await Registration.create({
         fullName: b.fullName,
@@ -92,6 +92,7 @@ app.post('/api/register',
         phone: b.phone,
         email: b.email,
         sscRegNumber: b.sscRegNumber,
+        tshirtSize: b.tshirtSize,
         photoPath: photoUrl,
         sscDocPaths: sscDocUrls,
         wantsPerform: b.wantsPerform === 'yes',
