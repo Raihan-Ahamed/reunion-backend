@@ -1,196 +1,418 @@
 <!doctype html>
 <html lang="bn">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin — Reunion 2026</title>
-<style>
-  :root{--navy:#08172f;--gold:#c9a227;--bg:#f4f6fa;--card:#fff;--muted:#6b7280;}
-  *{box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
-  body{margin:0;background:var(--bg);color:#1f2430}
-  header{background:var(--navy);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
-  header h1{font-size:18px;margin:0;letter-spacing:.5px}
-  header .gold{color:var(--gold)}
-  #loginBox{max-width:360px;margin:80px auto;background:var(--card);padding:28px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
-  #loginBox input{width:100%;padding:10px;margin:8px 0;border:1px solid #d7dbe3;border-radius:8px}
-  #loginBox button{width:100%;padding:10px;background:var(--navy);color:#fff;border:none;border-radius:8px;margin-top:10px;cursor:pointer}
-  .wrap{padding:20px;max-width:1200px;margin:auto}
-  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
-  .toolbar select,.toolbar input{padding:8px 10px;border:1px solid #d7dbe3;border-radius:8px}
-  .stats{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
-  .stat{background:var(--card);border-radius:12px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,0,0,.05);min-width:120px}
-  .stat b{display:block;font-size:22px}
-  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.05)}
-  th,td{padding:10px 12px;text-align:left;font-size:14px;border-bottom:1px solid #eef0f4}
-  th{background:#eef1f7;color:#444}
-  img.thumb{width:40px;height:40px;border-radius:50%;object-fit:cover}
-  .badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
-  .badge.pending{background:#fff3cd;color:#8a6d1a}
-  .badge.approved{background:#d4f8e8;color:#0a7a4a}
-  .badge.rejected{background:#fde2e2;color:#b00020}
-  .btn{padding:6px 12px;border:none;border-radius:6px;cursor:pointer;font-size:13px;margin-right:4px}
-  .btn.approve{background:#0a7a4a;color:#fff}
-  .btn.reject{background:#b00020;color:#fff}
-  .btn.view{background:var(--navy);color:#fff}
-  #modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px}
-  #modal .box{background:#fff;border-radius:14px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow:auto}
-  #modal .box h3{margin-top:0}
-  #modal .box table{box-shadow:none}
-  #modal .box img{max-width:100%;border-radius:8px;margin:6px 0}
-</style>
-</head>
-<body>
-
-<div id="loginBox">
-  <h2 style="margin-top:0">Reunion 2026 <span style="color:#c9a227">Admin</span></h2>
-  <input id="email" placeholder="Admin Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="login()">লগইন</button>
-  <p id="loginErr" style="color:#b00;font-size:13px"></p>
-</div>
-
-<div id="panel" style="display:none">
-  <header>
-    <h1>Hazera Taju Reunion <span class="gold">Admin Panel</span></h1>
-    <button onclick="logout()" style="background:transparent;border:1px solid #fff;color:#fff;padding:6px 14px;border-radius:6px;cursor:pointer">লগআউট</button>
-  </header>
-
-  <div class="wrap">
-    <div class="stats" id="stats"></div>
-
-    <div class="toolbar">
-      <select id="statusFilter" onchange="load()">
-        <option value="all">সব</option>
-        <option value="pending">পেন্ডিং</option>
-        <option value="approved">অনুমোদিত</option>
-        <option value="rejected">বাতিল</option>
-      </select>
-      <input id="searchBox" placeholder="নাম / ফোন / বিকাশ নাম্বার দিয়ে খুঁজুন" onkeyup="if(event.key==='Enter')load()">
-      <button class="btn view" onclick="load()">খুঁজুন</button>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin — Reunion 2026</title>
+    <style>
+      :root {
+        --navy: #08172f;
+        --gold: #c9a227;
+        --bg: #f4f6fa;
+        --card: #fff;
+        --muted: #6b7280;
+      }
+      * {
+        box-sizing: border-box;
+        font-family: "Segoe UI", system-ui, sans-serif;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: #1f2430;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 {
+        font-size: 18px;
+        margin: 0;
+        letter-spacing: 0.5px;
+      }
+      header .gold {
+        color: var(--gold);
+      }
+      #loginBox {
+        max-width: 360px;
+        margin: 80px auto;
+        background: var(--card);
+        padding: 28px;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+      #loginBox input {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0;
+        border: 1px solid #d7dbe3;
+        border-radius: 8px;
+      }
+      #loginBox button {
+        width: 100%;
+        padding: 10px;
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+      .wrap {
+        padding: 20px;
+        max-width: 1200px;
+        margin: auto;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .toolbar select,
+      .toolbar input {
+        padding: 8px 10px;
+        border: 1px solid #d7dbe3;
+        border-radius: 8px;
+      }
+      .stats {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+      .stat {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 14px 18px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        min-width: 120px;
+      }
+      .stat b {
+        display: block;
+        font-size: 22px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--card);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        text-align: left;
+        font-size: 14px;
+        border-bottom: 1px solid #eef0f4;
+      }
+      th {
+        background: #eef1f7;
+        color: #444;
+      }
+      img.thumb {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .badge {
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .badge.pending {
+        background: #fff3cd;
+        color: #8a6d1a;
+      }
+      .badge.approved {
+        background: #d4f8e8;
+        color: #0a7a4a;
+      }
+      .badge.rejected {
+        background: #fde2e2;
+        color: #b00020;
+      }
+      .btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        margin-right: 4px;
+      }
+      .btn.approve {
+        background: #0a7a4a;
+        color: #fff;
+      }
+      .btn.reject {
+        background: #b00020;
+        color: #fff;
+      }
+      .btn.view {
+        background: var(--navy);
+        color: #fff;
+      }
+      #modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      #modal .box {
+        background: #fff;
+        border-radius: 14px;
+        padding: 24px;
+        max-width: 520px;
+        width: 100%;
+        max-height: 85vh;
+        overflow: auto;
+      }
+      #modal .box h3 {
+        margin-top: 0;
+      }
+      #modal .box table {
+        box-shadow: none;
+      }
+      #modal .box img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 6px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loginBox">
+      <h2 style="margin-top: 0">
+        Reunion 2026 <span style="color: #c9a227">Admin</span>
+      </h2>
+      <input id="email" placeholder="Admin Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button onclick="login()">লগইন</button>
+      <p id="loginErr" style="color: #b00; font-size: 13px"></p>
     </div>
 
-    <table>
-      <thead>
-        <tr><th>ছবি</th><th>নাম</th><th>ব্যাচ</th><th>ফোন</th><th>বিকাশ (প্রেরক)</th><th>লেনদেন শেষ ৪</th><th>অতিথি</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th></tr>
-      </thead>
-      <tbody id="rows"></tbody>
-    </table>
-  </div>
-</div>
+    <div id="panel" style="display: none">
+      <header>
+        <h1>Hazera Taju Reunion <span class="gold">Admin Panel</span></h1>
+        <button
+          onclick="logout()"
+          style="
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+          "
+        >
+          লগআউট
+        </button>
+      </header>
 
-<div id="modal"><div class="box" id="modalBody"></div></div>
+      <div class="wrap">
+        <div class="stats" id="stats"></div>
 
-<script>
-const API = ''; // same origin
-let token = localStorage.getItem('adminToken') || '';
+        <div class="toolbar">
+          <select id="statusFilter" onchange="load()">
+            <option value="all">সব</option>
+            <option value="pending">পেন্ডিং</option>
+            <option value="approved">অনুমোদিত</option>
+            <option value="rejected">বাতিল</option>
+          </select>
+          <input
+            id="searchBox"
+            placeholder="নাম / ফোন / বিকাশ নাম্বার দিয়ে খুঁজুন"
+            onkeyup="if (event.key === 'Enter') load();"
+          />
+          <button class="btn view" onclick="load()">খুঁজুন</button>
+        </div>
 
-if (token) showPanel();
+        <table>
+          <thead>
+            <tr>
+              <th>ছবি</th>
+              <th>নাম</th>
+              <th>ব্যাচ</th>
+              <th>সাইজ</th>
+              <th>ফোন</th>
+              <th>বিকাশ (প্রেরক)</th>
+              <th>লেনদেন শেষ ৪</th>
+              <th>অতিথি</th>
+              <th>স্ট্যাটাস</th>
+              <th>অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
 
-async function login(){
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  const r = await fetch(API+'/api/admin/login', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({email, password})
-  });
-  const data = await r.json();
-  if(!r.ok){ document.getElementById('loginErr').textContent = data.error; return; }
-  token = data.token;
-  localStorage.setItem('adminToken', token);
-  showPanel();
-}
+    <div id="modal"><div class="box" id="modalBody"></div></div>
 
-function logout(){
-  localStorage.removeItem('adminToken');
-  location.reload();
-}
+    <script>
+      const API = ""; // same origin
+      let token = localStorage.getItem("adminToken") || "";
 
-function showPanel(){
-  document.getElementById('loginBox').style.display='none';
-  document.getElementById('panel').style.display='block';
-  load();
-}
+      if (token) showPanel();
 
-async function load(){
-  const status = document.getElementById('statusFilter').value;
-  const search = document.getElementById('searchBox').value;
-  const r = await fetch(`${API}/api/admin/registrations?status=${status}&search=${encodeURIComponent(search)}`, {
-    headers: { Authorization: 'Bearer '+token }
-  });
-  if(r.status===401){ logout(); return; }
-  const list = await r.json();
-  renderStats(list);
-  renderRows(list);
-}
+      async function login() {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const r = await fetch(API + "/api/admin/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          document.getElementById("loginErr").textContent = data.error;
+          return;
+        }
+        token = data.token;
+        localStorage.setItem("adminToken", token);
+        showPanel();
+      }
 
-function renderStats(list){
-  const pending = list.filter(x=>x.paymentStatus==='pending').length;
-  const approved = list.filter(x=>x.paymentStatus==='approved').length;
-  const rejected = list.filter(x=>x.paymentStatus==='rejected').length;
-  document.getElementById('stats').innerHTML = `
+      function logout() {
+        localStorage.removeItem("adminToken");
+        location.reload();
+      }
+
+      function showPanel() {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+        load();
+      }
+
+      async function load() {
+        const status = document.getElementById("statusFilter").value;
+        const search = document.getElementById("searchBox").value;
+        const r = await fetch(
+          `${API}/api/admin/registrations?status=${status}&search=${encodeURIComponent(search)}`,
+          {
+            headers: { Authorization: "Bearer " + token },
+          },
+        );
+        if (r.status === 401) {
+          logout();
+          return;
+        }
+        const list = await r.json();
+        renderStats(list);
+        renderRows(list);
+      }
+
+      function renderStats(list) {
+        const pending = list.filter(
+          (x) => x.paymentStatus === "pending",
+        ).length;
+        const approved = list.filter(
+          (x) => x.paymentStatus === "approved",
+        ).length;
+        const rejected = list.filter(
+          (x) => x.paymentStatus === "rejected",
+        ).length;
+        document.getElementById("stats").innerHTML = `
     <div class="stat">মোট<br><b>${list.length}</b></div>
     <div class="stat">পেন্ডিং<br><b style="color:#8a6d1a">${pending}</b></div>
     <div class="stat">অনুমোদিত<br><b style="color:#0a7a4a">${approved}</b></div>
     <div class="stat">বাতিল<br><b style="color:#b00020">${rejected}</b></div>
   `;
-}
+      }
 
-function renderRows(list){
-  document.getElementById('rows').innerHTML = list.map(r=>`
+      function renderRows(list) {
+        document.getElementById("rows").innerHTML = list
+          .map(
+            (r) => `
     <tr>
       <td><img class="thumb" src="${r.photoPath}"></td>
       <td>${r.fullName}</td>
-      <td>${r.batch}</td>
-      <td>${r.phone}</td>
+     <td>${r.batch}</td>
+<td>${r.tshirtSize || "-"}</td>
+<td>${r.phone}</td>
       <td>${r.bkashSenderNumber}</td>
       <td>${r.bkashTxnLast4}</td>
       <td>${r.guestCount}</td>
       <td><span class="badge ${r.paymentStatus}">${label(r.paymentStatus)}</span></td>
       <td>
         <button class="btn view" onclick="viewOne('${r._id}')">দেখুন</button>
-        ${r.paymentStatus!=='approved' ? `<button class="btn approve" onclick="act('${r._id}','approve')">অনুমোদন</button>` : ''}
-        ${r.paymentStatus!=='rejected' ? `<button class="btn reject" onclick="act('${r._id}','reject')">বাতিল</button>` : ''}
+        ${r.paymentStatus !== "approved" ? `<button class="btn approve" onclick="act('${r._id}','approve')">অনুমোদন</button>` : ""}
+        ${r.paymentStatus !== "rejected" ? `<button class="btn reject" onclick="act('${r._id}','reject')">বাতিল</button>` : ""}
       </td>
     </tr>
-  `).join('');
-}
+  `,
+          )
+          .join("");
+      }
 
-function label(s){ return {pending:'পেন্ডিং',approved:'অনুমোদিত',rejected:'বাতিল'}[s]||s; }
+      function label(s) {
+        return (
+          { pending: "পেন্ডিং", approved: "অনুমোদিত", rejected: "বাতিল" }[s] ||
+          s
+        );
+      }
 
-async function act(id, action){
-  if(!confirm(action==='approve' ? 'পেমেন্ট ভেরিফাই করে টিকিট পাঠাতে চান?' : 'এই রেজিস্ট্রেশন বাতিল করতে চান?')) return;
-  const r = await fetch(`${API}/api/admin/${action}/${id}`, {
-    method:'POST', headers:{Authorization:'Bearer '+token, 'Content-Type':'application/json'}
-  });
-  const data = await r.json();
-  if(!r.ok){ alert(data.error); return; }
-  load();
-}
+      async function act(id, action) {
+        if (
+          !confirm(
+            action === "approve"
+              ? "পেমেন্ট ভেরিফাই করে টিকিট পাঠাতে চান?"
+              : "এই রেজিস্ট্রেশন বাতিল করতে চান?",
+          )
+        )
+          return;
+        const r = await fetch(`${API}/api/admin/${action}/${id}`, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await r.json();
+        if (!r.ok) {
+          alert(data.error);
+          return;
+        }
+        load();
+      }
 
-async function viewOne(id){
-  const r = await fetch(`${API}/api/admin/registrations/${id}`, { headers:{Authorization:'Bearer '+token} });
-  const d = await r.json();
-  document.getElementById('modalBody').innerHTML = `
+      async function viewOne(id) {
+        const r = await fetch(`${API}/api/admin/registrations/${id}`, {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const d = await r.json();
+        document.getElementById("modalBody").innerHTML = `
     <h3>${d.fullName}</h3>
     <img src="${d.photoPath}">
     <table>
       <tr><td>ব্যাচ</td><td>${d.batch}</td></tr>
+      <tr><td>টি-শার্ট সাইজ</td><td>${d.tshirtSize || "-"}</td></tr>
       <tr><td>ফোন</td><td>${d.phone}</td></tr>
-      <tr><td>ইমেইল</td><td>${d.email||'-'}</td></tr>
+      <tr><td>ইমেইল</td><td>${d.email || "-"}</td></tr>
       <tr><td>SSC রেজি. নম্বর</td><td>${d.sscRegNumber}</td></tr>
-      <tr><td>পারফর্ম করবে?</td><td>${d.wantsPerform ? (d.performanceType+' — '+d.performanceDetails) : 'না'}</td></tr>
-      <tr><td>অতিথি</td><td>${(d.guests||[]).map(g=>g.name+' ('+g.relation+')').join(', ')||'-'}</td></tr>
+      <tr><td>পারফর্ম করবে?</td><td>${d.wantsPerform ? d.performanceType + " — " + d.performanceDetails : "না"}</td></tr>
+      <tr><td>অতিথি</td><td>${(d.guests || []).map((g) => g.name + " (" + g.relation + ")").join(", ") || "-"}</td></tr>
       <tr><td>বিকাশ প্রেরক</td><td>${d.bkashSenderNumber}</td></tr>
       <tr><td>লেনদেন শেষ ৪ ডিজিট</td><td>${d.bkashTxnLast4}</td></tr>
       <tr><td>স্ট্যাটাস</td><td>${label(d.paymentStatus)}</td></tr>
-      ${d.ticketToken ? `<tr><td>টিকিট কোড</td><td>${d.ticketToken}</td></tr>`:''}
+      ${d.ticketToken ? `<tr><td>টিকিট কোড</td><td>${d.ticketToken}</td></tr>` : ""}
     </table>
     <p><b>SSC ডকুমেন্ট:</b></p>
-    ${(d.sscDocPaths||[]).map(p=> p.endsWith('.pdf') ? `<a href="${p}" target="_blank">PDF দেখুন</a><br>` : `<img src="${p}">`).join('')}
+    ${(d.sscDocPaths || []).map((p) => (p.endsWith(".pdf") ? `<a href="${p}" target="_blank">PDF দেখুন</a><br>` : `<img src="${p}">`)).join("")}
     <div style="text-align:right;margin-top:14px"><button class="btn view" onclick="document.getElementById('modal').style.display='none'">বন্ধ করুন</button></div>
   `;
-  document.getElementById('modal').style.display='flex';
-}
-</script>
-</body>
+        document.getElementById("modal").style.display = "flex";
+      }
+    </script>
+  </body>
 </html>
